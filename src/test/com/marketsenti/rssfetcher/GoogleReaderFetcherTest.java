@@ -3,7 +3,6 @@ package test.com.marketsenti.rssfetcher;
 import junit.framework.TestCase;
 
 import com.marketsenti.rssfetcher.GoogleReaderFetcher;
-import com.marketsenti.rssfetcher.RssFetcherUtils;
 
 public class GoogleReaderFetcherTest extends TestCase
 {
