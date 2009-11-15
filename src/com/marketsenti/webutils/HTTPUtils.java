@@ -45,7 +45,7 @@ public class HTTPUtils
       throw new RuntimeException("Http Post failed with response message:"
           + conn.getResponseMessage() + " response:");
     }
-
+    logger.debug("Get (" + urlString + ") responded with " + response);
     return response;
   }
 

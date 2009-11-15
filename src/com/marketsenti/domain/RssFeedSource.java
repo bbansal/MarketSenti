@@ -1,8 +1,9 @@
-package com.marketsenti.feed;
+package com.marketsenti.domain;
 
-public class Feed
+public class RssFeedSource
 {
   private String rssSourceURL;
+  private String summary;
   private String lastModifiedDate;
   
   
@@ -21,6 +22,14 @@ public class Feed
   public void setLastModifiedDate(String lastModifiedDate)
   {
     this.lastModifiedDate = lastModifiedDate;
+  }
+  public void setSummary(String summary)
+  {
+    this.summary = summary;
+  }
+  public String getSummary()
+  {
+    return summary;
   }
  
 }

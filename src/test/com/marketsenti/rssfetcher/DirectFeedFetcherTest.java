@@ -1,4 +1,4 @@
-package test.com.marketsenti.newsfetcher;
+package test.com.marketsenti.rssfetcher;
 
 import java.util.Date;
 import java.util.Map.Entry;
@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import org.apache.http.Header;
 import org.apache.http.impl.cookie.DateUtils;
 
-import com.marketsenti.newsfetcher.RssDirectFeedFetcher;
+import com.marketsenti.rssfetcher.RssDirectFeedFetcher;
 import com.marketsenti.webutils.HtmlResponse;
 
 import junit.framework.TestCase;

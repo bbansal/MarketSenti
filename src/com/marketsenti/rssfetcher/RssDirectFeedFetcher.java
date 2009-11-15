@@ -1,4 +1,4 @@
-package com.marketsenti.newsfetcher;
+package com.marketsenti.rssfetcher;
 
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
