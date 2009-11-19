@@ -13,8 +13,7 @@ import com.google.common.collect.Sets;
 
 public class ArticleTextExtractor
 {
-  private final static Set<String> IGNORE_TAGS =
-                                                   Sets.newHashSet("iframe",
+  private final static Set<String> IGNORE_TAGS = Sets.newHashSet("iframe",
                                                                    "head",
                                                                    "script",
                                                                    "link",

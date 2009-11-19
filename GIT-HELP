@@ -1,4 +1,8 @@
 git basic commands
 ---------------------
 
-1) git clone ../.git
+1) svn checkout --> git clone 
+2) svn update --> git pull origin <branchname(master)>
+3) svn diff --> git diff
+4) svn status --> git status
+

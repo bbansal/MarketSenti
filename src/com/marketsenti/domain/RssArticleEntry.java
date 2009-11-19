@@ -1,7 +1,5 @@
 package com.marketsenti.domain;
 
-import sun.security.action.GetLongAction;
-
 public class RssArticleEntry
 {
   private RssFeedSource rssSource;
