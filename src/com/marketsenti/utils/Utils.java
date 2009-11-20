@@ -1,20 +1,26 @@
 package com.marketsenti.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class Utils
 {
   public static String toStringDeep(Object value) throws IllegalArgumentException,
-      IllegalAccessException
+      IllegalAccessException,
+      InvocationTargetException
   {
     StringBuilder builder = new StringBuilder(value.getClass() + "(");
-    Field[] fields = value.getClass().getDeclaredFields();
-    for (Field field : fields)
+    Method[] methods = value.getClass().getDeclaredMethods();
+    for (Method method : methods)
     {
-      builder.append(field.getName());
-      builder.append("(");
-      builder.append(toStringDeep(field.get(value)));
-      builder.append(")");
+      if (method.getName().contains("get"))
+      {
+        builder.append(method.getName());
+        builder.append("(");
+        builder.append(method.invoke(value));
+        builder.append(")");
+      }
     }
     builder.append(")");
     return builder.toString();

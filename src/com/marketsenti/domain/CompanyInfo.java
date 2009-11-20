@@ -1,6 +1,7 @@
 package com.marketsenti.domain;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import com.marketsenti.utils.Utils;
@@ -101,27 +102,11 @@ public class CompanyInfo
   {
     try
     {
-      return toStringDeep(this);
+      return Utils.toStringDeep(this);
     }
     catch (Exception e)
     {
-      throw new RuntimeException();
+      throw new RuntimeException(e);
     }
-  }
-
-  private String toStringDeep(Object value) throws IllegalArgumentException,
-      IllegalAccessException
-  {
-    StringBuilder builder = new StringBuilder(value.getClass() + "(");
-    Field[] fields = value.getClass().getDeclaredFields();
-    for (Field field : fields)
-    {
-      builder.append(field.getName());
-      builder.append("(");
-      builder.append(toStringDeep(field.get(value)));
-      builder.append(")");
-    }
-    builder.append(")");
-    return builder.toString();
   }
 }

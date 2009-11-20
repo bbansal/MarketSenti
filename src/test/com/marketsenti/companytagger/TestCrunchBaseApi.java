@@ -18,6 +18,6 @@ public class TestCrunchBaseApi extends TestCase
   
    public void testCrunchBaseAPI() throws MalformedURLException, IOException, JSONException
    {
-     CrunchBaseCompanyInfo.getCompanyInfo("linkedin");
+     CrunchBaseCompanyInfo.getCompanyInfo("google");
    }
 }
