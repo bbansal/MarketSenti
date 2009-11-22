@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.AbstractIterator;
+import com.marketsenti.storage.serializer.BytesSerializer;
 
 /**
  * Basic InMemory storage Engine implements {@link StorageEngine}<br>
@@ -32,9 +33,12 @@ public class InMemoryStorageEngine implements StorageEngine
     storeSchemaMap = Collections.synchronizedMap(new HashMap<String, StoreSchema>());
   }
 
-  synchronized public StoreSchema createStore(String storename,
-                                              Class keyClass,
-                                              Class valueClass)
+  @Override
+  public <K, V> StoreSchema createStore(String storename,
+                                        Class keyClass,
+                                        Class valueClass,
+                                        BytesSerializer<K> Keyserializer,
+                                        BytesSerializer<V> valueSerializer)
   {
     if (storageEngineMap.containsKey(storename))
     {
@@ -74,7 +78,7 @@ public class InMemoryStorageEngine implements StorageEngine
   {
     StoreSchema schema = this.getSchema(storename);
     checkSchema(key, value, schema);
-    
+
     List<V> values = (List<V>) getStore(storename).get(key);
     values.add(value);
   }
@@ -108,15 +112,15 @@ public class InMemoryStorageEngine implements StorageEngine
   public <K, V> void putValue(String storename, K key, Iterator<V> values, long timestamp)
   {
     StoreSchema schema = this.getSchema(storename);
-    V firstValue = (values.hasNext()) ?values.next():null;
+    V firstValue = (values.hasNext()) ? values.next() : null;
     checkSchema(key, firstValue, schema);
-    
+
     List<Object> valuesList = new ArrayList<Object>();
-    while(values.hasNext())
+    while (values.hasNext())
     {
       valuesList.add(values.next());
     }
-    
+
     getStore(storename).put(key, valuesList);
   }
 
@@ -134,6 +138,9 @@ public class InMemoryStorageEngine implements StorageEngine
                                                                            getStore(storename).entrySet()
                                                                                               .iterator();
 
+      K                                           currentKey           = null;
+      Iterator<V>                                 currentValueIterator = null;
+
       @SuppressWarnings("unchecked")
       @Override
       protected StoreEntry<K, V> computeNext()
@@ -143,9 +150,15 @@ public class InMemoryStorageEngine implements StorageEngine
           return endOfData();
         }
 
-        Entry<Object, List<Object>> entry = storeEntriesIterator.next();
-        return new StoreEntry<K, V>((K) entry.getKey(), (Iterator<V>) entry.getValue()
-                                                                           .iterator());
+        // loop while we get a valid value
+        while (null == currentValueIterator || !currentValueIterator.hasNext())
+        {
+          Entry<Object, List<Object>> entry = storeEntriesIterator.next();
+          currentKey = (K) entry.getKey();
+          currentValueIterator = (Iterator<V>) entry.getValue().iterator();
+        }
+
+        return new StoreEntry<K, V>(currentKey, currentValueIterator.next());
       }
     };
   }
@@ -154,5 +167,4 @@ public class InMemoryStorageEngine implements StorageEngine
   {
     return storageEngineMap.get(storename);
   }
-  
 }

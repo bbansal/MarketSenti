@@ -2,9 +2,8 @@
  * 
  */
 package com.marketsenti.companytagger.scorer;
-import com.marketsenti.Article.*;
-import com.marketsenti.companyTagger.*;
-import com.marketsenti.domain.*;
+import com.marketsenti.Article.Article;
+import com.marketsenti.domain.CompanyInfo;
 /**
  * @author abhishek
  *

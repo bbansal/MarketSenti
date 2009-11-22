@@ -2,6 +2,8 @@ package com.marketsenti.storage;
 
 import java.util.Iterator;
 
+import com.marketsenti.storage.serializer.BytesSerializer;
+
 
 /**
  * Base interface for all storage requirements
@@ -11,7 +13,7 @@ import java.util.Iterator;
  */
 public interface StorageEngine
 {
-  public StoreSchema createStore(String storename, Class keyClass, Class valueClass);
+  public <K,V> StoreSchema createStore(String storename, Class keyClass, Class valueClass, BytesSerializer<K> Keyserializer, BytesSerializer<V> valueSerializer);
 
   public StoreSchema getSchema(String storename);
 

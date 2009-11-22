@@ -1,16 +1,15 @@
 package com.marketsenti.storage;
 
-import java.util.Iterator;
 
 public class StoreEntry<K, V>
 {
-  private final K       key;
-  private final Iterator<V> values;
+  private final K key;
+  private final V value;
 
-  public StoreEntry(K key, Iterator<V> values)
+  public StoreEntry(K key, V value)
   {
     this.key = key;
-    this.values = values;
+    this.value = value;
   }
 
   public K getKey()
@@ -18,8 +17,8 @@ public class StoreEntry<K, V>
     return key;
   }
 
-  public Iterator<V> getValues()
+  public V getValue()
   {
-    return values;
+    return value;
   }
 }
