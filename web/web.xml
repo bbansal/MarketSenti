@@ -31,13 +31,13 @@
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>desiPandora</servlet-name>
-    <url-pattern>/</url-pattern>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.html</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>desiPandora</servlet-name>
-    <url-pattern>/desiPandora</url-pattern>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
   
 </web-app>
