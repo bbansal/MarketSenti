@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>
+      YouTube Embedded Player Example page
+    </title>
+    <!-- Use the Google AJAX Libraries API:
+      http://code.google.com/apis/ajaxlibs/ -->
+    <script src="http://www.google.com/jsapi"></script>
+    <script>
+      google.load("swfobject", "2.1");
+    </script>
+	     <script type="text/javascript">
+            setTimeout('myytplayer.playVideo()', 5000);
+        </script>
+        <script type="text/javascript">
+            var videoList = new olist(10)
+            var nextVideoID = "plsRqFDk-2A";
+            
+            function updateHTML(elmId, value){
+                document.getElementById(elmId).innerHTML = value;
+            }
+            
+            function setytplayerState(newState){
+                updateHTML("playerstate", newState);
+            }
+            
+            function onYouTubePlayerReady(playerId){
+                ytplayer = document.getElementById("myytplayer");
+                setInterval(updateytplayerInfo, 250);
+                updateytplayerInfo();
+                ytplayer.setPlaybackQuality("small");
+                ytplayer.addEventListener("onStateChange", "onytplayerStateChange");
+                ytplayer.addEventListener("onError", "onPlayerError");
+            }
+            
+            function onytplayerStateChange(newState){
+                alert("state change");
+                if (newstate == 0) {
+                    loadNewVideo(nextVideoId, 1);
+                    play();
+                }
+            }
+            
+            function onPlayerError(errorCode){
+                alert("An error occured: " + errorCode);
+            }
+            
+            function updateytplayerInfo(){
+                updateHTML("bytesloaded", getBytesLoaded());
+                updateHTML("bytestotal", getBytesTotal());
+                updateHTML("videoduration", getDuration());
+                updateHTML("videotime", getCurrentTime());
+                updateHTML("startbytes", getStartBytes());
+                updateHTML("volume", getVolume());
+            }
+            
+            // functions for the api calls
+            function loadNewVideo(id, startSeconds){
+                if (ytplayer) {
+                    ytplayer.loadVideoById(id, parseInt(startSeconds));
+                }
+            }
+            
+            function cueNewVideo(id, startSeconds){
+                if (ytplayer) {
+                    ytplayer.cueVideoById(id, startSeconds);
+                }
+            }
+            
+            function play(){
+                alert('play');
+                if (ytplayer) {
+                    ytplayer.playVideo();
+                }
+            }
+            
+            function pause(){
+                if (ytplayer) {
+                    ytplayer.pauseVideo();
+                }
+            }
+            
+            function stop(){
+                if (ytplayer) {
+                    ytplayer.stopVideo();
+                }
+            }
+            
+            function getPlayerState(){
+                if (ytplayer) {
+                    return ytplayer.getPlayerState();
+                }
+            }
+            
+            function seekTo(seconds){
+                if (ytplayer) {
+                    ytplayer.seekTo(seconds, true);
+                }
+            }
+            
+            function getBytesLoaded(){
+                if (ytplayer) {
+                    return ytplayer.getVideoBytesLoaded();
+                }
+            }
+            
+            function getBytesTotal(){
+                if (ytplayer) {
+                    return ytplayer.getVideoBytesTotal();
+                }
+            }
+            
+            function getCurrentTime(){
+                if (ytplayer) {
+                    return ytplayer.getCurrentTime();
+                }
+            }
+            
+            function getDuration(){
+                if (ytplayer) {
+                    return ytplayer.getDuration();
+                }
+            }
+            
+            function getStartBytes(){
+                if (ytplayer) {
+                    return ytplayer.getVideoStartBytes();
+                }
+            }
+            
+            function mute(){
+                if (ytplayer) {
+                    ytplayer.mute();
+                }
+            }
+            
+            function unMute(){
+                if (ytplayer) {
+                    ytplayer.unMute();
+                }
+            }
+            
+            function getEmbedCode(){
+                alert(ytplayer.getVideoEmbedCode());
+            }
+            
+            function getVideoUrl(){
+                alert(ytplayer.getVideoUrl());
+            }
+            
+            function setVolume(newVolume){
+                if (ytplayer) {
+                    ytplayer.setVolume(newVolume);
+                }
+            }
+            
+            function getVolume(){
+                if (ytplayer) {
+                    return ytplayer.getVolume();
+                }
+            }
+            
+            function clearVideo(){
+                if (ytplayer) {
+                    ytplayer.clearVideo();
+                }
+            }
+        </script>
+        <style type="text/css">
+            
+            body {
+                font-family: verdana, helvetica;
+                background-color: white;
+            }
+            
+            #timedisplay {
+                border: solid 1px red;
+                width: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="search">
+            <FORM NAME="searchForm" ACTION="" METHOD="GET">
+                Search one song/artist/category 
+                <BR>
+                <INPUT TYPE="text" NAME="searchbox" VALUE="" size="100">
+                <P>
+                    <INPUT TYPE="button" NAME="search" Value="Click" onClick='alert("fix me !!")'>
+                </P>
+            </FORM>
+        </div><!-- end search -->
+        <div>
+        <P>
+            <div id="ytapiplayer">
+                You need Flash player 8+ and JavaScript enabled to view this video.
+            </div>
+        </P>
+        <script type="text/javascript">
+            // allowScriptAccess must be set to allow the Javascript from one domain to access the swf on the youtube domain
+            var params = {
+                allowScriptAccess: "always"
+            };
+            // this sets the id of the object or embed tag to 'myytplayer'. You then use this id to access the swf and make calls to the player's API
+            var atts = {
+                id: "myytplayer"
+            };
+            
+            var startVideoID = "aN5rCSdgOQw";
+            swfobject.embedSWF("http://www.youtube.com/v/" + startVideoID + "&amp;border=0&amp;enablejsapi=1&amp;playerapiid=ytplayer&amp;autoplay=1&amp;showsearch=0", "ytapiplayer", "225", "144", "8", null, null, params, atts);
+        </script>
+        <div>
+            Player state: <span id="playerstate">--</span>
+        </div>
+        <br/>
+        <a href="javascript:void(0);" onclick="play();">Play</a>
+        | <a href="javascript:void(0);" onclick="pause();">Pause</a>
+        | <a href="javascript:void(0);" onclick="stop();">Stop</a>
+        | <a href="javascript:void(0);" onclick="mute();">Mute</a>
+        | <a href="javascript:void(0);" onclick="unMute();">Unmute</a>
+        <br/>
+    </body>
+</html>
