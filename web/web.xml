@@ -3,12 +3,28 @@
 
 <web-app>
 
+<context-param>
+  <param-name>log4jConfigLocation</param-name>
+  <param-value>/log4j.properties</param-value>
+</context-param>
+
 <!--
   <listener>
     <listener-class>com.linkedin.batch.web.BatchApplicationServletContextListener</listener-class>
   </listener>
 -->  
   
+   <servlet>
+    <servlet-name>log4j-init</servlet-name>
+    <servlet-class>com.desipandora.impl.web.Log4jServlet</servlet-class>
+    <init-param>
+      <param-name>log4j-file</param-name>
+      <param-value>WEB-INF/classes/log4j.properties</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+ 
   <servlet>
     <servlet-name>desiPandora</servlet-name>
     <servlet-class>com.desipandora.impl.web.DesiPandoraServlet</servlet-class>
@@ -17,6 +33,11 @@
   <servlet-mapping>
     <servlet-name>desiPandora</servlet-name>
     <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>desiPandora</servlet-name>
+    <url-pattern>/desiPandora</url-pattern>
   </servlet-mapping>
   
 </web-app>

@@ -1,14 +1,7 @@
 package com.desipandora.impl.web;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -56,11 +49,11 @@ public class DesiPandoraServlet extends HttpServlet
   {
     StringBuilder builder = new StringBuilder();
     
-    builder.append("cookies:" + cookies + "\n");
-    builder.append("headers:" + headers + "\n");
-    builder.append("contextPath:" + contextPath + "\n");
-    builder.append("queryString:" + queryString + "\n");
-    builder.append("sessionId:" + sessionId + "\n");
+    builder.append("(" +"cookies:" + cookies + ")");
+    builder.append("(" +"headers:" + headers + ")");
+    builder.append("(" +"contextPath:" + contextPath + ")");
+    builder.append("(" +"queryString:" + queryString + ")");
+    builder.append("(" +"sessionId:" + sessionId + ")");
 
     logger.info(builder.toString());
   }

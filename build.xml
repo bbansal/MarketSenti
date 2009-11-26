@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<project name="desiPandora" basedir="." default="redeploy">
+
+ <!-- set the base directory -->
+  <property name="base.dir" value="${basedir}"/>
+  <property file="${base.dir}/build.properties"/>
+
+
+ <!-- Override/set  paths to module specific paths -->
+  <property name="dist.dir" value = "${base.dir}/${dist.dir}"/>
+  <property name="classes.dir" value = "${base.dir}/${classes.dir}"/>
+  <property name="javadoc.dir" value = "${base.dir}/${javadoc.dir}"/>
+  <property name="java.dir" value = "${base.dir}/${src.dir}"/>
+  <property name="web.dir"  value = "${base.dir}/${web.dir}"/>
+  <property name="lib.dir" value = "${base.dir}/${lib.dir}"/>
+  <property name="jar.name" value = "${ant.project.name}.jar"/>
+ 
+ <path id="main-classpath">
+    <fileset dir="${base.dir}/${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+    <pathelement path="${classes.dir}"/>
+  </path>
+
+  <!-- macro to delete and recreate a directory -->
+  <macrodef name="replace-dir">
+    <attribute name="dir"/>
+    <sequential>
+      <delete dir="@{dir}"/>
+      <mkdir dir="@{dir}"/>
+    </sequential>
+  </macrodef>
+
+  <target name="clean" description="Delete generated files.">
+    <delete  dir="${dist.dir}"/>
+    <delete dir="${classes.dir}"/>
+    <delete dir="${javadoc.dir}"/>
+  </target>
+
+
+  <target name="build" description="Compile main source tree java files">
+    <replace-dir dir="${classes.dir}"/>
+    <copy todir="${classes.dir}">
+      <fileset dir="${java.dir}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+    <javac fork="true" executable="${java6.home}/bin/javac" target="1.6" destdir="${classes.dir}" debug="true" deprecation="true" failonerror="true">
+      <src path="${java.dir}"/>
+      <classpath refid="main-classpath"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="build" description="Build server jar file">
+    <mkdir dir="${dist.dir}"/>
+    <jar destfile="${jar.name}">
+      <fileset dir="${classes.dir}">
+        <include name="**/*.*"/>
+      </fileset>
+      <!-- include src code for ide convenience -->
+      <fileset dir="${java.dir}" >
+        <include name="**/*.java"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="docs" description="Create complete Javadoc documentation">
+    <replace-dir dir="${javadoc.dir}"/>
+    <javadoc sourcepath="${java.dir}" destdir="${javadoc.dir}" windowtitle="${display.name}"
+                 source="1.5" author="true" version="true" use="true" packagenames="*">
+      <doctitle>${display.name}</doctitle>
+      <classpath refid="main-classpath"/>
+    </javadoc>
+  </target>
+
+  <target name="war" depends="build" description="Build server war file">
+    <replace-dir dir="${dist.dir}/war"/>
+    <war destfile="${dist.dir}/war/${ant.project.name}.war" webxml="${web.dir}/web.xml" basedir="${classes.dir}">
+      <classes dir="${classes.dir}"/>
+      <fileset dir="${web.dir}/"/>
+      <lib dir="${lib.dir}">
+         <exclude name="servlet-api.jar"/>
+         <exclude name="${lib.dir}/src/**"/>
+      </lib>
+    </war>
+  </target>
+
+  <target name="redeploy" depends="war, deploy">
+  </target>
+
+  <target name="list" description="List Tomcat applications">
+    <list url="${tomcat.manager.url}"
+                 username="${tomcat.manager.username}"
+                 password="${tomcat.manager.password}"/>
+  </target>
+
+  <target name="deploy" description="Deploy application" depends="clean, war">
+    <deploy url="${tomcat.manager.url}"
+                 username="${tomcat.manager.username}"
+                 password="${tomcat.manager.password}"
+                 path="${tomcat.context}"
+                 update="true"
+                 war="file:${dist.dir}/war/${name}.war"/>
+  </target>
+
+  <target name="undeploy" description="Undeploy application">
+    <undeploy url="${tomcat.manager.url}"
+                 username="${tomcat.manager.username}"
+                 password="${tomcat.manager.password}"
+                 path="${tomcat.context}"/>
+  </target>
+
+</project>
