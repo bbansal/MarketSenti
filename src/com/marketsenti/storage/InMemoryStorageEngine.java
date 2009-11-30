@@ -114,8 +114,9 @@ public class InMemoryStorageEngine implements StorageEngine
     StoreSchema schema = this.getSchema(storename);
     V firstValue = (values.hasNext()) ? values.next() : null;
     checkSchema(key, firstValue, schema);
-
+    
     List<Object> valuesList = new ArrayList<Object>();
+    valuesList.add(firstValue); // FIXME :  any checks required
     while (values.hasNext())
     {
       valuesList.add(values.next());

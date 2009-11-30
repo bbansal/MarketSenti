@@ -6,7 +6,7 @@ public interface DesiPandoraService
 {
 
   /**
-   * Create a unique session-id, associate it with the given uID §
+   * Create a unique session-id, associate it with the given uID ï¿½
    * @param uId
    * @return session-id
    */
@@ -26,3 +26,4 @@ public interface DesiPandoraService
    void feedback(String sessionId, String songId, double feedback);
    
 }
+   
