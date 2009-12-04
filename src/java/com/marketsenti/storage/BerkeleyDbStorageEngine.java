@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -51,7 +52,7 @@ public class BerkeleyDbStorageEngine implements StorageEngine
   private final Map<String, BytesSerializer<?>> valueSerializers      =
                                                                           Collections.synchronizedMap(new HashMap<String, BytesSerializer<?>>());
 
-  private final long                            bdbCacheSize          = 512 * 1024 * 1024;
+  private final long                            bdbCacheSize          = 5 * 1024 * 1024;
   private final int                             bdbMinFileUtilization = 80;
 
   public BerkeleyDbStorageEngine(String dataDir, String propsFile) throws FileNotFoundException,
@@ -65,12 +66,24 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     this.dataDir = dataDir;
   }
 
+  public BerkeleyDbStorageEngine(String dataDir, Map<String,String> properties) throws FileNotFoundException,
+      IOException
+  {
+    for (Entry<String, String> entry: properties.entrySet())
+    {
+      props.setProperty(entry.getKey(), entry.getValue());
+    }
+    environmentConfig = createEnvironmentConfig();
+    databaseConfig = createDatabaseConfig();
+    this.dataDir = dataDir;
+  }
+
   private EnvironmentConfig createEnvironmentConfig()
   {
     EnvironmentConfig environmentConfig = new EnvironmentConfig();
 
     environmentConfig.setTransactional(true);
-    environmentConfig.setCacheSize(Long.parseLong(props.getProperty("bdb.cache.size", ""
+    environmentConfig.setCacheSize(Long.parseLong(props.getProperty("je.maxMemory", ""
         + bdbCacheSize)));
     environmentConfig.setTxnNoSync(true);
     environmentConfig.setAllowCreate(true);
@@ -193,9 +206,10 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     if (stores.containsKey(storeName))
       throw new RuntimeException("store " + storeName + " already exists !");
 
-    if (!(keyClass.getClass().equals(String.class) && valueClass.getClass()
-                                                                .equals(String.class)))
-      throw new RuntimeException("bdbStore supports <String,String> for now.");
+    if (!(keyClass.getName().equals(String.class.getName()) && valueClass.getName()
+                                                                         .equals(String.class.getName())))
+      throw new RuntimeException("bdbStore supports <String,String> for now keyClass:"
+          + keyClass.getName() + " valueClass:" + valueClass.getName());
 
     try
     {
