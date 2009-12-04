@@ -5,7 +5,10 @@
         <title>YouTube Embedded Player Example page</title>
         <!-- Use the Google AJAX Libraries API:
         http://code.google.com/apis/ajaxlibs/ -->
-        <script src="swfobject.js" type="text/javascript">
+        <script src="http://www.google.com/jsapi">
+        </script>
+        <script>
+            google.load("swfobject", "2.1");
         </script>
         <style type="text/css">
             
@@ -22,17 +25,14 @@
         <script type="text/javascript">
             
             function updateHTML(elmId, value){
-                alert("update html");
                 document.getElementById(elmId).innerHTML = value;
             }
             
             function setytplayerState(newState){
-                alert("youtube state change");
                 updateHTML("playerstate", newState);
             }
             
             function onYouTubePlayerReady(playerId){
-                alert("youtube on ready" + playerId);
                 ytplayer = document.getElementById("myytplayer");
                 setInterval(updateytplayerInfo, 250);
                 updateytplayerInfo();
@@ -71,9 +71,7 @@
             }
             
             function play(){
-				alert('play ');
                 if (ytplayer) {
-					alert('inside play')
                     ytplayer.playVideo();
                 }
             }
@@ -173,6 +171,11 @@
     </head>
     <body id="page">
         <div>
+            <input type="text" size="90" id="searchTextid" value="" /><a href="javascript:void(0)" onclick="loadNewSearch(document.getElementById('searchTextid').value)"> Search </a>
+        </div>
+        <br/>
+        <div>
+        <div>
             <!-- embed the player -->
             <div id="ytapiplayer">
                 You need Flash player 8+ and JavaScript enabled to view this video.
@@ -189,10 +192,9 @@
                 // this sets the id of the object or embed tag to 'myytplayer'.
                 // You then use this id to access the swf and make calls to the player's API
                 var atts = {
-                    allowScriptAccess: "always",
                     id: "myytplayer"
                 };
-                swfobject.embedSWF("http://www.youtube.com/v/ma9I9VBKPiw?border=0&;playerapiid=ytplayer&;allowscriptaccess=always", "ytapiplayer", "425", "344", "8", null, null, params, atts,onYouTubePlayerReady);
+                swfobject.embedSWF("http://www.youtube.com/v/ma9I9VBKPiw?border=0&amp;enablejsapi=1&amp;playerapiid=ytplayer&amp;autoplay=1", "ytapiplayer", "425", "344", "8", null, null, params, atts);
                 //]]>
             </script>
             <!-- HTML below here is for display of the player info + state -->

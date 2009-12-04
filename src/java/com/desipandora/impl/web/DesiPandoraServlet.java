@@ -1,6 +1,9 @@
 package com.desipandora.impl.web;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
@@ -14,13 +17,13 @@ import org.apache.log4j.Logger;
 
 import com.desipandora.api.DesiPandoraService;
 
-
 public class DesiPandoraServlet extends HttpServlet
 {
-  private static final Logger logger = Logger.getLogger(DesiPandoraServlet.class);
-  private static final long serialVersionUID = 1L;
-  
-  private DesiPandoraService _service ;
+  private static final Logger logger           =
+                                                   Logger.getLogger(DesiPandoraServlet.class);
+  private static final long   serialVersionUID = 1L;
+
+  private DesiPandoraService  _service;
 
   @Override
   public void init(ServletConfig config) throws ServletException
@@ -33,14 +36,20 @@ public class DesiPandoraServlet extends HttpServlet
       IOException
   {
     Cookie[] cookies = req.getCookies();
-    Enumeration headers = req.getHeaderNames() ;
+    Enumeration headers = req.getHeaderNames();
     String contextPath = req.getContextPath();
     String queryString = req.getQueryString();
     String sessionId = req.getRequestedSessionId();
-    
+
     printRequest(cookies, headers, contextPath, queryString, sessionId);
+
+    FileReader reader = new FileReader(new File("/usr/local/apache2/htdocs/index.html"));
+    PrintWriter out = resp.getWriter();
+    int c;
+    while ((c = reader.read()) != -1)
+      out.write(c);
   }
-  
+
   private void printRequest(Cookie[] cookies,
                             Enumeration headers,
                             String contextPath,
@@ -48,12 +57,12 @@ public class DesiPandoraServlet extends HttpServlet
                             String sessionId)
   {
     StringBuilder builder = new StringBuilder();
-    
-    builder.append("(" +"cookies:" + cookies + ")");
-    builder.append("(" +"headers:" + headers + ")");
-    builder.append("(" +"contextPath:" + contextPath + ")");
-    builder.append("(" +"queryString:" + queryString + ")");
-    builder.append("(" +"sessionId:" + sessionId + ")");
+
+    builder.append("(" + "cookies:" + cookies + ")");
+    builder.append("(" + "headers:" + headers + ")");
+    builder.append("(" + "contextPath:" + contextPath + ")");
+    builder.append("(" + "queryString:" + queryString + ")");
+    builder.append("(" + "sessionId:" + sessionId + ")");
 
     logger.info(builder.toString());
   }
@@ -64,5 +73,4 @@ public class DesiPandoraServlet extends HttpServlet
   {
   }
 
-  
 }
