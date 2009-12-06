@@ -37,11 +37,11 @@ public class TestDesiPandoraServiceyouTube extends TestCase{
 		//keyWordList.add("metallica");
 		keyWordList.add("tu hi meri sab hai");
 		List<SongEntry> songEntryList =  new ArrayList<SongEntry>();
-		songEntryList = desiPandoraService.getFirstFewSongs(keyWordList, sessionId, 50);
-		songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
-		songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
-		songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
-		songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
+		songEntryList = desiPandoraService.getFirstFewSongs(keyWordList, sessionId, 15);
+		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
+		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
+		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
+		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
 		Iterator<SongEntry> iterSongEntry = songEntryList.iterator();
 		while(iterSongEntry.hasNext()){
 			System.out.println("Song retrieved "+iterSongEntry.next().getTitle());
