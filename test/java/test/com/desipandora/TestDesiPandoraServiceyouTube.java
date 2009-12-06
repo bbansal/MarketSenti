@@ -34,7 +34,7 @@ public class TestDesiPandoraServiceyouTube extends TestCase{
 		DesiPandoraServiceYouTube desiPandoraService = new DesiPandoraServiceYouTube(storage, applicationName);
 		String sessionId = desiPandoraService.createSessionId("absk82");
 		List<String> keyWordList = new ArrayList<String>();
-		keyWordList.add("afreen afreen");
+		keyWordList.add("you shook me");
 		List<SongEntry> songEntryList =  new ArrayList<SongEntry>();
 		songEntryList = desiPandoraService.getFirstFewSongs(keyWordList, sessionId, 18);
 		songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 8));

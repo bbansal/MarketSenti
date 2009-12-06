@@ -33,6 +33,7 @@ import com.google.gdata.data.youtube.YouTubeMediaRating;
 import com.google.gdata.data.youtube.YtPublicationState;
 import com.google.gdata.data.youtube.YtStatistics;
 import com.google.gdata.util.ServiceException;
+import com.marketsenti.storage.InMemoryStorageEngine;
 import com.marketsenti.storage.StorageEngine;
 
 /**
@@ -49,6 +50,17 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 	//private List<VideoEntry> playList;
 	//int counterNextSeed ;
 
+
+	public DesiPandoraServiceYouTube() {
+		super();
+		this.storage  = new InMemoryStorageEngine(); 
+		this.storeName = "DesiPandoraDb"; // temporary. see where to put this.
+		storage.createStore(storeName, String.class, SessionEntry.class , null, null);
+		this.serviceName = "DesiPandora-01";
+	}
+
+	
+	
 	/**
 	 * @param storage
 	 */
