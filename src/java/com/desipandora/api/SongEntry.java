@@ -15,6 +15,7 @@ public class SongEntry
   private List<String> artists;
   private String       albums;
   private URL          url;
+  private String          relatedFeedString;
   private String       youtubeId;
   private SongEntryType type;
 
@@ -24,7 +25,15 @@ public class SongEntry
     setType(type);
   }
   
-  public String getSongId()
+  public String getRelatedFeedString() {
+	return relatedFeedString;
+}
+
+public void setRelatedFeedString (String relatedFeedString) {
+	this.relatedFeedString = relatedFeedString ;
+}
+
+public String getSongId()
   {
     return songId;
   }

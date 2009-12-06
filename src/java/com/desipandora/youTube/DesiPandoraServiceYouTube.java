@@ -14,6 +14,7 @@ import java.util.List;
 import com.desipandora.api.DesiPandoraService;
 import com.desipandora.api.SongEntry;
 import com.desipandora.api.SongEntry.SongEntryType;
+import com.desipandora.sessionInfo.PlayList;
 import com.desipandora.sessionInfo.SessionEntry;
 import com.desipandora.sessionInfo.SongFeedbackEntry;
 import com.google.gdata.client.youtube.YouTubeQuery;
@@ -33,6 +34,10 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 	private String storeName;
 	private YouTubeService service;
 	private String serviceName;
+	// Play Session specific info
+	//private List<VideoEntry> playList;
+	//int counterNextSeed ;
+
 	/**
 	 * @param storage
 	 */
@@ -42,16 +47,17 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 		this.storeName = "DesiPandoraDb"; // temporary. see where to put this.
 		storage.createStore(storeName, String.class, SessionEntry.class , null, null);
 		this.serviceName = serviceName;
+		//this.playList = new ArrayList<VideoEntry>();
+		//this.counterNextSeed = 0;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.desipandora.api.DesiPandoraService#createSessionId(java.lang.String)
 	 */
 	public String createSessionId(String uId) {
-		// TODO Auto-generated method stub
 		// generate a session Id
 		Date date = new Date();
-		String sessionId = date.toString();
+		String sessionId = uId + "_" + date.toString();
 		List<SessionEntry> arrayList = new ArrayList<SessionEntry>(); 
 		arrayList.add(new SessionEntry(uId));
 		System.out.println("Session id is "+sessionId);
@@ -64,7 +70,6 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 	 * @see com.desipandora.api.DesiPandoraService#feedback(java.lang.String, java.lang.String, double)
 	 */
 	public void feedback(String sessionId, String songId, double feedback) {
-		// TODO Auto-generated method stub
 		SessionEntry sessionEntry = (SessionEntry)(storage.getValues(storeName, sessionId)).next();
 		sessionEntry.addFeedbackToSong(songId, feedback);
 	}
@@ -74,45 +79,44 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 	 */
 	public List<SongEntry> getFirstFewSongs(List<String> Keywords,
 			String sessionId, int numSongs) {
-		// TODO Auto-generated method stub
 		String queryString = "";
 		Iterator<String> iterKeywords = Keywords.iterator();
 		List<SongEntry> songEntryList = new ArrayList<SongEntry>();
 		while(iterKeywords.hasNext()){
-			queryString = queryString + iterKeywords.next();
+			queryString = queryString + " " + iterKeywords.next();
 		}
 		YouTubeQuery query = null;
 	    try{
-	    	// FIXME :  Might need some changes based on implementations
 	        query = new YouTubeQuery(new URL("http://gdata.youtube.com/feeds/api/videos"));
-	        query.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT);
+	        query.setOrderBy(YouTubeQuery.OrderBy.RELEVANCE);
 	        query.setFullTextQuery(queryString);
 	        query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
 	        try{
 	          VideoFeed videoFeed = service.query(query, VideoFeed.class);
-	          //FIXME : do stuff here
 	          Iterator<SessionEntry> iterStorage = storage.getValues(storeName, sessionId);
 	          SessionEntry sessionEntry =  null;
 	          if(iterStorage.hasNext()){
 	        	  sessionEntry = (SessionEntry) (storage.getValues(storeName, sessionId).next());
 	          }
 	          else{
-	        	  System.out.println("No Entries exist in storaname "+storeName);
+	        	  throw new RuntimeException("No Entries exist in storeName "+storeName);
 	          }
-	          for(VideoEntry videoEntry : videoFeed.getEntries()){
-	        	  //FIXME :  Getting IDs here might need to be revisited at some point.
+	          List<VideoEntry> videoEntryList = videoFeed.getEntries();
+	          Iterator<VideoEntry> iterVideoEntryList = videoEntryList.iterator();
+	          if(iterVideoEntryList.hasNext()){
+	        	  VideoEntry videoEntry = iterVideoEntryList.next();
 	        	  SongEntry songEntry = new SongEntry(videoEntry.getId(), SongEntryType.YOUTUBE);
-	        	  songEntry.setTitle(videoEntry.getTitle().getPlainText());
-	        	  // 
-	        	  /********************************************************************************
-	        	   * FIXME : Add some more entries here and do some more search to finally generate 
-	        	   * a new list of SongEntry. Add all the recommendation code here.
-	        	   */
-	        	  sessionEntry.addSongToMap(songEntry.getSongId(), new SongFeedbackEntry(songEntry, 0.0));
+	        	  CopyVideoEntryToSongEntry(videoEntry, songEntry); 
+	        	  System.out.println("First Title : "+songEntry.getTitle()+" link : "+ songEntry.getRelatedFeedString());	    			
 	        	  songEntryList.add(songEntry);
-	        	  
+	        	  sessionEntry.addPlayListToSession(new PlayList(songEntryList, 0));
+	        	  List<SongEntry> tempSongEntryList = getNextSongs(sessionId, numSongs);
+	        	  songEntryList.addAll(tempSongEntryList);
+	    	  
 	          }
-	          return songEntryList;
+	          else{
+	        	  System.out.println("No Videos found");
+	          }
 	        }
 	        catch(IOException e){
 	          e.printStackTrace();
@@ -127,16 +131,85 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 	        e.printStackTrace();
 	      }
 
-		
-		return null;
+	   return songEntryList;
+	}
+
+	private void CopyVideoEntryToSongEntry(VideoEntry videoEntry,
+			SongEntry songEntry) {
+		songEntry.setTitle(videoEntry.getTitle().getPlainText());
+		songEntry.setRelatedFeedString(videoEntry.getRelatedVideosLink().getHref());
+  	  /********************************************************************************
+  	   * FIXME : Add some more entries here and do some more search to finally generate 
+  	   * a new list of SongEntry. Add all the recommendation code here.
+  	   */
 	}
 
 	/* (non-Javadoc)
 	 * @see com.desipandora.api.DesiPandoraService#getNextSongs(java.lang.String, int)
 	 */
 	public List<SongEntry> getNextSongs(String sessionId, int numSongs) {
+		Iterator<SessionEntry> iterStorage = storage.getValues(storeName, sessionId);
+        SessionEntry sessionEntry =  null;
+        PlayList sessionPlayList = new PlayList();
+        if(iterStorage.hasNext()){
+      	  sessionEntry = (SessionEntry) (storage.getValues(storeName, sessionId).next());
+      	  sessionPlayList = sessionEntry.getPlayList();
+        }
+        else{
+      	  throw new RuntimeException("No Entries exist in storemane "+storeName);
+        }
+			
+		/* Maintain a list of songIds which will keep track of what order the seongs
+		 * have been sent. nextSeed is a pointer to the next song on this list which
+		 * has been used as a seed for getRelatedVideos. 
+		 * - Label A : get song at next seed and find related videos.
+		 * - add these videos to a list(to be returned) as well as the map while discarding duplicates
+		 * - if (number retrieved == number requested)
+		 *      Update nextSeed pointer
+		 *      return this songlist.
+		 *   else
+		 *      go to A with nextSeed.
+		 */          
+
+        List<SongEntry> songEntryList = new ArrayList<SongEntry>();
+        List<SongEntry> seedPlayList = new ArrayList<SongEntry>();
+        seedPlayList.addAll(sessionPlayList.getPlayList());
+        int counterNextSeed = sessionPlayList.getRelatedFeedSeed();
+        while ((songEntryList.size() < numSongs) && (seedPlayList.size() > counterNextSeed)){
+        	
+			SongEntry seedSongEntry = seedPlayList.get(counterNextSeed);
+			if(seedSongEntry.getRelatedFeedString() != ""){
+				String feedString = seedSongEntry.getRelatedFeedString();
+				try{
+					VideoFeed relatedVideoFeed = service.getFeed(new URL(feedString), VideoFeed.class);
+			        for(VideoEntry loopVideoEntry : relatedVideoFeed.getEntries()){
+			        	boolean isDuplicate = FindSimilar(loopVideoEntry);
+			        	if(!isDuplicate){
+			        		SongEntry songEntry = new SongEntry(loopVideoEntry.getId(), SongEntryType.YOUTUBE);
+			        		CopyVideoEntryToSongEntry(loopVideoEntry, songEntry); 
+			        		songEntryList.add(songEntry);
+			        		seedPlayList.add(songEntry);
+			        	}
+			        }
+			      
+				}
+				catch (IOException e){
+					e.printStackTrace();
+				}
+				catch (ServiceException e){
+					e.printStackTrace();
+				}
+			}
+			counterNextSeed++;
+		}
+        sessionEntry.addPlayListToSession(new PlayList(songEntryList, counterNextSeed));
+        System.out.println("Songs Retrieved "+ songEntryList.size()+", Songs Requested "+numSongs);
+		return songEntryList;
+	}
+
+	private boolean FindSimilar(VideoEntry loopVideoEntry) {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 }
