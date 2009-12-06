@@ -7,6 +7,7 @@
         http://code.google.com/apis/ajaxlibs/ -->
         <script src="http://www.google.com/jsapi">
         </script>
+                
         <script>
             google.load("swfobject", "2.1");
         </script>
@@ -23,6 +24,28 @@
             }
         </style>
         <script type="text/javascript">
+            var ytplayer;
+            var sessionId = null;
+            var xmlHttp = null;
+            var baseAddress =  window.location.href.toString();
+            
+            
+            function doGet(Url, callback) {
+              alert(Url);
+              xmlHttp = new XMLHttpRequest(); 
+              xmlHttp.onreadystatechange = callback;
+              xmlHttp.open( "GET", Url, true );
+              xmlHttp.send( null );
+           }
+            
+            
+            function getSessionIdCallback()  {
+                if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 ) {
+                      if ( xmlHttp.responseText != "Not found" ) {
+                         alert("Fix me:" + xmlHttp.responseText);
+                      }
+                 }
+             }
             
             function updateHTML(elmId, value){
                 document.getElementById(elmId).innerHTML = value;
@@ -62,6 +85,16 @@
                 if (ytplayer) {
                     ytplayer.loadVideoById(id, parseInt(startSeconds));
                 }
+            }
+            
+            // functions for the api calls
+            function loadNewSearch(text){
+              if (sessionId == null){
+                  url = baseAddress + "/api?operation=newUserSessionId";
+                  doGet(url, getSessionIdCallback);
+                  }
+              url = baseAddress + "/api?operation=search&keywords=" + text;     
+              doGet(url, getSessionIdCallback); 
             }
             
             function cueNewVideo(id, startSeconds){
@@ -194,7 +227,7 @@
                 var atts = {
                     id: "myytplayer"
                 };
-                swfobject.embedSWF("http://www.youtube.com/v/ma9I9VBKPiw?border=0&amp;enablejsapi=1&amp;playerapiid=ytplayer&amp;autoplay=1", "ytapiplayer", "425", "344", "8", null, null, params, atts);
+                swfobject.embedSWF("http://www.youtube.com/v/ma9I9VBKPiw?border=0&amp;enablejsapi=1&amp;playerapiid=ytplayer&amp;autoplay=1", "ytapiplayer", "225", "144", "8", null, null, params, atts);
                 //]]>
             </script>
             <!-- HTML below here is for display of the player info + state -->
@@ -242,11 +275,6 @@
                 | Start at: <input type="text" size="4" id="startseconds2" value="0" />
             </div>
             <br/>
-            <div>
-                <a href="javascript:void(0)" onclick="getEmbedCode()">Get Embed Code</a>
-                | <a href="javascript:void(0)" onclick="getVideoUrl()">Get Video URL</a>
-                | <a href="javascript:void(0);" onclick="clearVideo()">Clear Video</a>
-            </div>
         </div>
     </body>
 </html>

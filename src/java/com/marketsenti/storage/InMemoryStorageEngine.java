@@ -33,7 +33,6 @@ public class InMemoryStorageEngine implements StorageEngine
     storeSchemaMap = Collections.synchronizedMap(new HashMap<String, StoreSchema>());
   }
 
-  @Override
   public <K, V> StoreSchema createStore(String storename,
                                         Class keyClass,
                                         Class valueClass,

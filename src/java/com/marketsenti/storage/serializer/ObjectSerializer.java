@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 public class ObjectSerializer implements BytesSerializer<Serializable>
 {
-  @Override
   public Serializable fromBytes(byte[] bytes)
   {
     try
@@ -24,7 +23,6 @@ public class ObjectSerializer implements BytesSerializer<Serializable>
     }
   }
 
-  @Override
   public byte[] getBytes(Serializable object)
   {
     try

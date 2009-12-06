@@ -196,7 +196,7 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     return environment;
   }
 
-  @Override
+
   public <K, V> StoreSchema createStore(String storeName,
                                         Class keyClass,
                                         Class valueClass,
@@ -228,7 +228,6 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     }
   }
 
-  @Override
   public boolean dropStore(String storename)
   {
     if (!stores.containsKey(storename))
@@ -254,13 +253,11 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     return true;
   }
 
-  @Override
   public StoreSchema getSchema(String storename)
   {
     return storeSchemas.get(storename);
   }
 
-  @Override
   public <K, V> Iterator<StoreEntry<K, V>> getUpdatesSince(String storename,
                                                            long timestamp)
   {
@@ -271,7 +268,6 @@ public class BerkeleyDbStorageEngine implements StorageEngine
    * We save valus as K, V inside berkeley db.
    */
   @SuppressWarnings("unchecked")
-  @Override
   public <K, V> Iterator<V> getValues(String storename, K key)
   {
     Cursor cursor = null;
@@ -303,20 +299,17 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     }
   }
 
-  @Override
   public <K, V> void appendValue(String storename, K key, V value, long timestamp)
   {
     putValueList(storename, key, Arrays.asList(value).iterator());
   }
 
-  @Override
   public <K, V> void putValue(String storename, K key, Iterator<V> values, long timestamp)
   {
     putValueList(storename, key, values);
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   public <K, V> void removeEntry(String storename, K key)
   {
     Cursor cursor = null;
@@ -354,7 +347,6 @@ public class BerkeleyDbStorageEngine implements StorageEngine
     }
   }
 
-  @Override
   public <K, V> Iterator<StoreEntry<K, V>> scanStore(final String storename)
   {
     return new AbstractIterator<StoreEntry<K, V>>()
