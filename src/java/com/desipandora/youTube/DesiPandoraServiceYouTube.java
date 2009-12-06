@@ -275,13 +275,13 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
         while ((songEntryList.size() < numSongs) && (seedPlayList.size() > counterNextSeed)){
         	
 			SongEntry seedSongEntry = seedPlayList.get(counterNextSeed);
+			System.out.println("SEED : "+seedSongEntry.getTitle());
 			if(seedSongEntry.getRelatedFeedString() != ""){
 				String feedString = seedSongEntry.getRelatedFeedString();
 				try{
 					VideoFeed relatedVideoFeed = service.getFeed(new URL(feedString), VideoFeed.class);
 					
-			        for(VideoEntry loopVideoEntry : relatedVideoFeed.getEntries()){
-			        	
+			        for(VideoEntry loopVideoEntry : relatedVideoFeed.getEntries()){	        	
 			        	SongEntry songEntry = new SongEntry(loopVideoEntry.getId(), SongEntryType.YOUTUBE);
 		        		CopyVideoEntryToSongEntry(loopVideoEntry, songEntry); 
 			        	boolean isDuplicate = FindSimilar(songEntry, seedPlayList);
@@ -319,11 +319,11 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 			intersection.retainAll(titleWordsSet);
 			double score = intersection.size()/(Math.sqrt(seedSongEntry.getTitleWordsSet().size() * titleWordsSet.size()));
 			if(score > 0.5){
-				//System.out.println("Discarded song : '"+songEntry.getTitle()+"' MATCHES '"+seedSongEntry.getTitle()+"'");
+				System.out.println("DISCARD : '"+songEntry.getTitle()+"' MATCHES '"+seedSongEntry.getTitle()+"'");
 				return true;
 			}
 		}
-		//System.out.println("Added song : '"+songEntry.getTitle()+"'");
+		System.out.println("ADD : '"+songEntry.getTitle()+"'");
 		return false;
 	}
 }

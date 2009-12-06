@@ -34,11 +34,10 @@ public class TestDesiPandoraServiceyouTube extends TestCase{
 		DesiPandoraServiceYouTube desiPandoraService = new DesiPandoraServiceYouTube(storage, applicationName);
 		String sessionId = desiPandoraService.createSessionId("absk82");
 		List<String> keyWordList = new ArrayList<String>();
-		//keyWordList.add("metallica");
-		keyWordList.add("tu hi meri sab hai");
+		keyWordList.add("afreen afreen");
 		List<SongEntry> songEntryList =  new ArrayList<SongEntry>();
-		songEntryList = desiPandoraService.getFirstFewSongs(keyWordList, sessionId, 15);
-		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
+		songEntryList = desiPandoraService.getFirstFewSongs(keyWordList, sessionId, 18);
+		songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 8));
 		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
 		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
 		//songEntryList.addAll(desiPandoraService.getNextSongs(sessionId, 10));
