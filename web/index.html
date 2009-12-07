@@ -69,7 +69,7 @@
                          for(var i=0; i< jsonSongObject.songList.length; i++){
                            songList.push(jsonSongObject.songList[i]);
                          } 
-                         alert("Added search results:" + songList); 
+                         //alert("Added search results:" + songList); 
                          
                          playNext();                                       
                       }
@@ -139,7 +139,7 @@
             }
             
            function loadNewSongs(){      
-             // doGet(baseAddress + "/api?operation=search&keywords=" + text + "&userSessionId=" + sessionId, getSearchResultsCallback); 
+              doGet(baseAddress + "/api?operation=getNextSongs&userSessionId=" + sessionId, getSearchResultsCallback); 
             }
             
             
@@ -159,11 +159,6 @@
                 loadNewVideo(songList.shift(), 0);
                 play();
               }
-              
-              // also cue the next song here
-             if(songList.length > 1){
-                cueNewVideo(songList[0], 0);
-             }
             }
             
             function play(){
