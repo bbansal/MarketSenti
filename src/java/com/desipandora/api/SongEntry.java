@@ -82,10 +82,11 @@ public String getSongId()
   public void setTitle(String title)
   {
     this.title = title;
-    String trimmedTitle = this.title.replaceAll("[^A-Za-z_ ]", "");
-    String[] splittedTitle = trimmedTitle.split("[\\s|_]+");
+    String trimmedTitle = this.title.replaceAll("[^A-Za-z-_ ]", "");
+    String[] splittedTitle = trimmedTitle.split("[\\s|_|-]+");
     
     for(int i = 0; i<splittedTitle.length; i++){
+    	//System.out.println("TOKENS : "+splittedTitle[i]);
     	titleWordsSet.add(splittedTitle[i]);
     }
   }	

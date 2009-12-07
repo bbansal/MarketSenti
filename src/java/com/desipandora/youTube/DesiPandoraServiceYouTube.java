@@ -58,8 +58,6 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 		storage.createStore(storeName, String.class, SessionEntry.class , null, null);
 		this.serviceName = "DesiPandora-01";
 	}
-
-	
 	
 	/**
 	 * @param storage
@@ -131,8 +129,8 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 	        	  CopyVideoEntryToSongEntry(videoEntry, songEntry); 
 	        	  System.out.println("First Title : "+songEntry.getTitle()+" link : "+ songEntry.getRelatedFeedString());	    			
 	        	  songEntryList.add(songEntry);
-	        	  sessionEntry.addPlayListToSession(new PlayList(songEntryList, 0));
-	        	  List<SongEntry> tempSongEntryList = getNextSongs(sessionId, numSongs);
+	        	  sessionEntry.addPlayListToSession(new PlayList(songEntryList, 0, 1));
+	        	  List<SongEntry> tempSongEntryList = getNextSongs(sessionId, numSongs-1);
 	        	  songEntryList.addAll(tempSongEntryList);
 	    	  
 	          }
@@ -283,7 +281,13 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
         List<SongEntry> songEntryList = new ArrayList<SongEntry>();
         List<SongEntry> seedPlayList = new ArrayList<SongEntry>();
         seedPlayList.addAll(sessionPlayList.getPlayList());
-        int counterNextSeed = sessionPlayList.getRelatedFeedSeed();
+        int counterNextSeed = sessionPlayList.getIndexRelatedFeedSeed();
+        int counterNextRecommendation = sessionPlayList.getIndexNextRecommendation();
+        if((sessionPlayList.getPlayList().size() - counterNextRecommendation) >= numSongs){
+        	sessionEntry.addPlayListToSession(new PlayList(songEntryList, counterNextSeed, counterNextRecommendation + numSongs));
+        	System.out.println("Songs Retrieved "+ songEntryList.size()+", Songs Requested "+numSongs + ", CounterNextRecommendation "+ (counterNextRecommendation+numSongs));
+            return seedPlayList.subList(counterNextRecommendation, counterNextRecommendation+numSongs);	
+        }
         while ((songEntryList.size() < numSongs) && (seedPlayList.size() > counterNextSeed)){
         	
 			SongEntry seedSongEntry = seedPlayList.get(counterNextSeed);
@@ -293,11 +297,12 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 				try{
 					VideoFeed relatedVideoFeed = service.getFeed(new URL(feedString), VideoFeed.class);
 					
-			        for(VideoEntry loopVideoEntry : relatedVideoFeed.getEntries()){	        	
+			        for(VideoEntry loopVideoEntry : relatedVideoFeed.getEntries()){
+			        	
 			        	SongEntry songEntry = new SongEntry(loopVideoEntry.getId(), SongEntryType.YOUTUBE);
 		        		CopyVideoEntryToSongEntry(loopVideoEntry, songEntry); 
 			        	boolean isDuplicate = FindSimilar(songEntry, seedPlayList);
-		        		//boolean isDuplicate = false;
+			        	//boolean isDuplicate = false;
 			        	if(!isDuplicate){
 			        		songEntryList.add(songEntry);
 			        		seedPlayList.add(songEntry);
@@ -314,9 +319,10 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 			}
 			counterNextSeed++;
 		}
-        sessionEntry.addPlayListToSession(new PlayList(songEntryList, counterNextSeed));
-        System.out.println("Songs Retrieved "+ songEntryList.size()+", Songs Requested "+numSongs);
-		return songEntryList;
+        sessionEntry.addPlayListToSession(new PlayList(songEntryList, counterNextSeed, counterNextRecommendation+numSongs));
+        System.out.println("Songs Retrieved "+ songEntryList.size()+", Songs Requested "+numSongs + ", CounterNextRecommendation "+(counterNextRecommendation+numSongs));
+        List<SongEntry> temp =seedPlayList.subList(counterNextRecommendation, counterNextRecommendation+numSongs); 
+		return temp;
 	}
 
 	private boolean FindSimilar(SongEntry songEntry, List<SongEntry> seedPlayList) {
@@ -329,7 +335,7 @@ public class DesiPandoraServiceYouTube implements DesiPandoraService {
 			Set<String> seedSongSet = seedSongEntry.getTitleWordsSet();
 			Set<String> intersection = new HashSet<String>(seedSongSet);
 			intersection.retainAll(titleWordsSet);
-			double score = intersection.size()/(Math.sqrt(seedSongEntry.getTitleWordsSet().size() * titleWordsSet.size()));
+			double score = intersection.size()/(Math.min(seedSongEntry.getTitleWordsSet().size(), titleWordsSet.size()));
 			if(score > 0.5){
 				System.out.println("DISCARD : '"+songEntry.getTitle()+"' MATCHES '"+seedSongEntry.getTitle()+"'");
 				return true;
