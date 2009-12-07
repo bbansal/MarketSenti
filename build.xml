@@ -2,6 +2,8 @@
 
 <project name="desiPandora" basedir="." default="redeploy">
 
+<property environment="env"/>
+
  <!-- set the base directory -->
   <property name="base.dir" value="${basedir}"/>
   <property file="${base.dir}/build.properties"/>
