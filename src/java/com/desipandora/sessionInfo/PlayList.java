@@ -14,29 +14,47 @@ import com.desipandora.api.SongEntry;
  */
 public class PlayList {
 	private List<SongEntry> playList;
-	private int relatedFeedSeed;
+	private int indexRelatedFeedSeed;
+	private int indexNextRecommendation;
 	
 	public PlayList(){
 		this.playList = new ArrayList<SongEntry>();
-		this.relatedFeedSeed = -1;
+		this.indexRelatedFeedSeed = -1;
+		this.indexNextRecommendation = 0;
 	}
 	
 	public List<SongEntry> getPlayList() {
 		return playList;
 	}
 	
-	public PlayList(List<SongEntry> playList, int relatedFeedSeed) {
+	public PlayList(List<SongEntry> playList, int indexRelatedFeedSeed, int indexNextRecommendation) {
 		this.playList = new ArrayList<SongEntry>();
 		this.playList.addAll(playList);
-		this.relatedFeedSeed = relatedFeedSeed;
+		this.indexRelatedFeedSeed = indexRelatedFeedSeed;
+		this.indexNextRecommendation = indexNextRecommendation;
 	}
 	public void setPlayList(List<SongEntry> playList) {
 		this.playList.addAll(playList);
 	}
-	public int getRelatedFeedSeed() {
-		return relatedFeedSeed;
+	public int getIndexRelatedFeedSeed() {
+		return indexRelatedFeedSeed;
 	}
-	public void setRelatedFeedSeed(int relatedFeedSeed) {
-		this.relatedFeedSeed = relatedFeedSeed;
+	public void setIndexRelatedFeedSeed(int indexRelatedFeedSeed) {
+		this.indexRelatedFeedSeed = indexRelatedFeedSeed;
 	}
+
+	/**
+	 * @return the indexNextRecommendation
+	 */
+	public int getIndexNextRecommendation() {
+		return indexNextRecommendation;
+	}
+
+	/**
+	 * @param indexNextRecommendation the indexNextRecommendation to set
+	 */
+	public void setIndexNextRecommendation(int indexNextRecommendation) {
+		this.indexNextRecommendation = indexNextRecommendation;
+	}
+	
 }

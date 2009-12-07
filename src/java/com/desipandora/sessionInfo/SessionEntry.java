@@ -35,7 +35,8 @@ public class SessionEntry {
 		
 		Iterator<SongEntry> iterPlayList = playList.getPlayList().iterator();
 		this.playList.setPlayList(playList.getPlayList());
-		this.playList.setRelatedFeedSeed(playList.getRelatedFeedSeed());
+		this.playList.setIndexRelatedFeedSeed(playList.getIndexRelatedFeedSeed());
+		this.playList.setIndexNextRecommendation(playList.getIndexNextRecommendation());
 		while(iterPlayList.hasNext()){
 			SongEntry songEntry = iterPlayList.next();
 			songFeedbackEntryMap.put(songEntry.getSongId(), new SongFeedbackEntry(songEntry, 0.0));
@@ -68,7 +69,7 @@ public class SessionEntry {
 	public void printPlayList(){
 		List<SongEntry> songEntryList = playList.getPlayList();
 		Iterator<SongEntry> iterSongEntryList = songEntryList.iterator();
-		System.out.println("Playlist counterNextSeed is at "+playList.getRelatedFeedSeed());
+		System.out.println("Playlist counterNextSeed is at "+playList.getIndexRelatedFeedSeed() +" counterNextrecommendation is at "+playList.getIndexNextRecommendation());
 		while(iterSongEntryList.hasNext()){
 			System.out.println("PlayList title : " + iterSongEntryList.next().getTitle());
 		}
