@@ -28,13 +28,15 @@
             var sessionId = null;
             var xmlHttp = null;
             var baseAddress =  window.location.href.toString();
+            var searchText = null;
             
             
-            function doGet(Url, callback) {
-              alert(Url);
+            function doGet(geturl, callback) {
+              alert("doGet:" + geturl);
+              xmlHttp = null;
               xmlHttp = new XMLHttpRequest(); 
               xmlHttp.onreadystatechange = callback;
-              xmlHttp.open( "GET", Url, true );
+              xmlHttp.open( "GET", geturl, true );
               xmlHttp.send( null );
            }
             
@@ -42,11 +44,22 @@
             function getSessionIdCallback()  {
                 if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 ) {
                       if ( xmlHttp.responseText != "Not found" ) {
-                         alert("Fix me:" + xmlHttp.responseText);
+                         alert("getSessionId:" + xmlHttp.responseText);
+                         // do the search call here.
+                         loadSearchResults(searchText)
                       }
                  }
              }
-            
+                        
+            function getSearchResultsCallback()  {
+                if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 ) {
+                      if ( xmlHttp.responseText != "Not found" ) {
+                         alert("searchResults:" + xmlHttp.responseText);
+                      }
+                 }
+             }
+             
+             
             function updateHTML(elmId, value){
                 document.getElementById(elmId).innerHTML = value;
             }
@@ -87,15 +100,22 @@
                 }
             }
             
-            // functions for the api calls
             function loadNewSearch(text){
               if (sessionId == null){
-                  url = baseAddress + "/api?operation=newUserSessionId";
-                  doGet(url, getSessionIdCallback);
-                  }
-              url = baseAddress + "/api?operation=search&keywords=" + text;     
-              doGet(url, getSessionIdCallback); 
+                  searchText = text;
+                  doGet(baseAddress + "/api?operation=newUserSessionId", getSessionIdCallback);              
+              }
+              else
+              {   
+                 loadSearchResults(text);
+              }    
             }
+            
+            function loadSearchResults(text){      
+              alert("calling loadSearchResults");      
+              doGet(baseAddress + "/api?operation=search&keywords=" + text, getSearchResultsCallback); 
+            }
+            
             
             function cueNewVideo(id, startSeconds){
                 if (ytplayer) {
