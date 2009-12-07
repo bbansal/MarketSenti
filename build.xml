@@ -15,6 +15,7 @@
   <property name="web.dir"  value = "${base.dir}/${web.dir}"/>
   <property name="lib.dir" value = "${base.dir}/${lib.dir}"/>
   <property name="jar.name" value = "${ant.project.name}.jar"/>
+  <property name="java6.home" value = "${env.JAVA6_HOME}"/>
  
  <path id="main-classpath">
     <fileset dir="${base.dir}/${lib.dir}">
