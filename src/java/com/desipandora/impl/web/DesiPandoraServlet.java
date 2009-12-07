@@ -1,10 +1,9 @@
 package com.desipandora.impl.web;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,10 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.desipandora.api.DesiPandoraService;
+import com.desipandora.api.SongEntry;
 import com.desipandora.youTube.DesiPandoraServiceYouTube;
 
 public class DesiPandoraServlet extends HttpServlet {
@@ -35,6 +36,8 @@ public class DesiPandoraServlet extends HttpServlet {
 	private final static String KEYWORDS = "keywords";
 	private final static String NUM_SONGS = "numSongs";
 	private final static String USER_ID = "uid";
+	private final static String USER_SESSION_ID = "userSessionId";
+	private final static String SONG_LIST = "songList";
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -63,59 +66,77 @@ public class DesiPandoraServlet extends HttpServlet {
 
 	private void handleOperation(int operationCode, HttpServletRequest req,
 			HttpServletResponse resp) throws IOException {
-		try
-		{
-		switch (operationCode) {
-		case 1:
-			handleGetNewSessionId(req,resp);
-			break;
-		case 2:
-			handleSearch(req,resp);
-			break;
-		case 3:
-			handleGetNextSongs(req,resp);
-			break;
-		case 4:
-			handleFeedback(req,resp);
-			break;
-		default:
-			resp.sendError(resp.SC_NOT_IMPLEMENTED,
-					"No recognized operation paramter found.");
-		}
-		}
-		catch (Exception e)
-		{
+		try {
+			switch (operationCode) {
+			case 1:
+				handleGetNewSessionId(req, resp);
+				break;
+			case 2:
+				handleSearch(req, resp);
+				break;
+			case 3:
+				handleGetNextSongs(req, resp);
+				break;
+			case 4:
+				handleFeedback(req, resp);
+				break;
+			default:
+				resp.sendError(resp.SC_NOT_IMPLEMENTED,
+						"No recognized operation paramter found.");
+			}
+		} catch (Exception e) {
 			logger.error(e);
 			resp.sendError(resp.SC_NOT_MODIFIED, " failed with exception:" + e);
 		}
-		
+
 		resp.getWriter().flush();
 		resp.getWriter().close();
 	}
 
 	private void handleFeedback(HttpServletRequest req, HttpServletResponse resp) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void handleGetNextSongs(HttpServletRequest req,
 			HttpServletResponse resp) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	private void handleSearch(HttpServletRequest req, HttpServletResponse resp) {
-		// TODO Auto-generated method stub
-		
+	private void handleSearch(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException, JSONException {
+		String keywordString = req.getParameter(KEYWORDS);
+		String sessionId = req.getParameter(USER_SESSION_ID);
+		String numSongString = (null != req.getParameter(NUM_SONGS)) ? req
+				.getParameter(NUM_SONGS) : "10";
+		int numSongs = Integer.parseInt(numSongString);
+
+		if (null == keywordString || null == sessionId)
+			throw new RuntimeException("empty keyword string passed in search.");
+
+		List<SongEntry> songs = _service.getFirstFewSongs(Arrays
+				.asList(keywordString), sessionId, numSongs);
+		logger.debug("search results received for userSession:" + sessionId
+				+ " keywords:" + keywordString + ":" + songs);
+		JSONArray songArray = new JSONArray();
+		for (SongEntry song : songs) {
+			songArray.put(song.getSongId());
+		}
+
+		JSONObject object = new JSONObject();
+		object.put(SONG_LIST, songArray);
+		resp.getWriter().print(object.toString());
 	}
 
 	private void handleGetNewSessionId(HttpServletRequest req,
 			HttpServletResponse resp) throws JSONException, IOException {
-		String uId = (null == req.getParameter(USER_ID)) ? req.getParameter(USER_ID): "defaultUser";
-		String sessionId =  _service.createSessionId(uId);
-			
+		String uId = (null != req.getParameter(USER_ID)) ? req
+				.getParameter(USER_ID) : "defaultUser";
+		String sessionId = _service.createSessionId(uId);
+
 		JSONObject object = new JSONObject();
-		object.put("userSessionId", sessionId);
+		object.put(USER_SESSION_ID, sessionId);
 		resp.getWriter().print(object.toString());
 	}
 

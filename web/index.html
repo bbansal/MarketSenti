@@ -29,10 +29,10 @@
             var xmlHttp = null;
             var baseAddress =  window.location.href.toString();
             var searchText = null;
-            
+            var songList = new Array();
             
             function doGet(geturl, callback) {
-              alert("doGet:" + geturl);
+              //alert("doGet:" + geturl);
               xmlHttp = null;
               xmlHttp = new XMLHttpRequest(); 
               xmlHttp.onreadystatechange = callback;
@@ -42,9 +42,15 @@
             
             
             function getSessionIdCallback()  {
+                var jsonData = null;
                 if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 ) {
                       if ( xmlHttp.responseText != "Not found" ) {
-                         alert("getSessionId:" + xmlHttp.responseText);
+                      
+                       jsonData = eval('(' + xmlHttp.responseText + ')');                      
+                         //alert("got New SessionId:" + jsonData.userSessionId);
+                         sessionId = jsonData.userSessionId;
+                         
+                         
                          // do the search call here.
                          loadSearchResults(searchText)
                       }
@@ -52,9 +58,20 @@
              }
                         
             function getSearchResultsCallback()  {
+                var jsonSongArray = null;
                 if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 ) {
                       if ( xmlHttp.responseText != "Not found" ) {
-                         alert("searchResults:" + xmlHttp.responseText);
+                         //alert("searchResults:" + xmlHttp.responseText);
+                         
+                         jsonSongObject = eval('(' + xmlHttp.responseText + ')');   
+                         //alert("got search results:" + jsonSongObject.songList);
+                                            
+                         for(var i=0; i< jsonSongObject.songList.length; i++){
+                           songList.push(jsonSongObject.songList[i]);
+                         } 
+                         alert("Added search results:" + songList); 
+                         
+                         playNext();                                       
                       }
                  }
              }
@@ -81,6 +98,10 @@
             }
             
             function onytplayerStateChange(newState){
+                if (newState == 0){
+                  playNext();
+                }
+                
                 setytplayerState(newState);
             }
             
@@ -101,9 +122,11 @@
             }
             
             function loadNewSearch(text){
+              // TODO : refresh songList here and same on backend
+              songList = [];
               if (sessionId == null){
                   searchText = text;
-                  doGet(baseAddress + "/api?operation=newUserSessionId", getSessionIdCallback);              
+                  doGet(baseAddress + "/api?operation=getNewSessionId", getSessionIdCallback);              
               }
               else
               {   
@@ -112,8 +135,11 @@
             }
             
             function loadSearchResults(text){      
-              alert("calling loadSearchResults");      
-              doGet(baseAddress + "/api?operation=search&keywords=" + text, getSearchResultsCallback); 
+              doGet(baseAddress + "/api?operation=search&keywords=" + text + "&userSessionId=" + sessionId, getSearchResultsCallback); 
+            }
+            
+           function loadNewSongs(){      
+             // doGet(baseAddress + "/api?operation=search&keywords=" + text + "&userSessionId=" + sessionId, getSearchResultsCallback); 
             }
             
             
@@ -121,6 +147,23 @@
                 if (ytplayer) {
                     ytplayer.cueVideoById(id, startSeconds);
                 }
+            }
+            
+            function playNext(){
+              if(songList.length < 3){
+                 // ajax async call to fill up the playlist
+                 loadNextSongs();
+              }
+              
+              if(songList.length > 1){
+                loadNewVideo(songList.shift(), 0);
+                play();
+              }
+              
+              // also cue the next song here
+             if(songList.length > 1){
+                cueNewVideo(songList[0], 0);
+             }
             }
             
             function play(){
@@ -257,6 +300,7 @@
             <br/>
             <a href="javascript:void(0);" onclick="play();">Play</a>
             | <a href="javascript:void(0);" onclick="pause();">Pause</a>
+            | <a href="javascript:void(0);" onclick="playNext();">Next</a>
             | <a href="javascript:void(0);" onclick="stop();">Stop</a>
             | <a href="javascript:void(0);" onclick="mute();">Mute</a>
             | <a href="javascript:void(0);" onclick="unMute();">Unmute</a>

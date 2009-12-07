@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.marketsenti.utils.Utils;
+
 public class SongEntry
 {
   public enum SongEntryType
@@ -21,7 +23,6 @@ public class SongEntry
   float                youTubeRating;
   private URL          url;
   private String          relatedFeedString;
-  private String       youtubeId;
   private SongEntryType type;
   private Set<String> titleWordsSet;
 
@@ -125,15 +126,6 @@ public String getSongId()
     this.url = url;
   }
 
-  public String getYoutubeId()
-  {
-    return youtubeId;
-  }
-
-  public void setYoutubeId(String youtubeId)
-  {
-    this.youtubeId = youtubeId;
-  }
   public void setType(SongEntryType type)
   {
     this.type = type;
@@ -142,5 +134,4 @@ public String getSongId()
   {
     return type;
   }
-
 }
